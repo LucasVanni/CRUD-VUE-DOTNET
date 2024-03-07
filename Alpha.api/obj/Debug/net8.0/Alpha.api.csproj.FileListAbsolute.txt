@@ -135,3 +135,4 @@ C:\Users\vanni\source\repos\Alpha.api\obj\Debug\net8.0\Alpha.api.pdb
 C:\Users\vanni\source\repos\Alpha.api\obj\Debug\net8.0\Alpha.api.genruntimeconfig.cache
 C:\Users\vanni\source\repos\Alpha.api\obj\Debug\net8.0\ref\Alpha.api.dll
 C:\Users\vanni\source\repos\Alpha.api\bin\Debug\net8.0\Newtonsoft.Json.dll
+C:\Users\vanni\source\repos\Alpha.api\obj\Debug\net8.0\Alpha.api.sourcelink.json

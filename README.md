@@ -63,12 +63,13 @@ To get the project up and running on your local machine, follow these steps:
 
    ```bash
     yarn
-  ```
+   ```
 
 3. Serve the application:
-  ```bash
+
+   ```bash
     yarn dev
-  ```
+   ```
 
 The application will be available at http://localhost:5173/
 
