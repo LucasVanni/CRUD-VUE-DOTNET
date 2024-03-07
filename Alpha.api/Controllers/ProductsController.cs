@@ -1,10 +1,9 @@
 ﻿using Alpha.api.Data;
 using Alpha.api.Models;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using System.Globalization;
 
 namespace Alpha.api.Controllers
 {
@@ -14,75 +13,60 @@ namespace Alpha.api.Controllers
     {
         private readonly ProductsContext _context;
         private static HttpClient _client = new HttpClient();
-        private static HttpClient? _lastUsedClient = null;
-        private static bool _isDataLoaded = false;
-
-        public ProductsController(ProductsContext context)
+        private IMapper _mapper;
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="context"></param>        
+        public ProductsController(
+            ProductsContext context, 
+            IMapper mapper
+        )
         {
             _context = context;
+            _mapper = mapper;
         }
 
+        /// <summary>
+        /// Consulta de Produtos
+        /// </summary>
+        /// <param name="page"></param>
+        /// <param name="pageSize">Quantidade de produtos por página. O padrão é 10.</param>
+        /// <param name="sortBy">Campo pelo qual os produtos serão ordenados. Deixe vazio para ordenação padrão.</param>
+        /// <returns>Uma lista paginada de produtos.</returns>
+        /// <remarks>
+        /// Exemplo de uso:
+        /// <code>
+        /// GET /products?page=2&amp;pageSize=20&amp;sortBy=nome
+        /// </code>
+        /// </remarks>
+        /// <response code="200">Uma listagem com os produtos</response>
         [HttpGet]
         [Route("/products")]
         public async Task<IActionResult> GetProducts(int page = 1, int pageSize = 10, string sortBy = "")
         {
-            var response = await _client.GetAsync("https://fakestoreapi.com/products");
 
-            response.EnsureSuccessStatusCode();
-
-            var result = await response.Content.ReadAsStringAsync();
-
-
-            if (string.IsNullOrEmpty(result))
-            {
-                return NotFound();
-            }
-
-            var products = JsonConvert.DeserializeObject<List<Product>>(result);
-
-            var productsDb = await _context.Products.ToListAsync();
-
-
-            if (!_isDataLoaded || _client != _lastUsedClient)
-            {
-                if (products != null && products.Any())
-                {
-                    foreach (var product in products)
-                    {
-                        if (string.IsNullOrEmpty(product.BarCode))
-                        {
-
-                            product.BarCode = "ValorPadrão";
-                        }
-                    }
-
-                    _context.Products.RemoveRange(productsDb);
-
-                    await _context.Products.AddRangeAsync(products);
-                    await _context.SaveChangesAsync();
-
-
-                    _isDataLoaded = true;
-                    _lastUsedClient = _client;
-                }
-            }
+            await sincronizar();
 
             IQueryable<Product> query = _context.Products;
 
             query = query.OrderBy(p => p.Id);
 
             if (sortBy.ToLower() == "price")
-            {
                 query = query.OrderBy(p => p.Price);
-            } else if(sortBy.ToLower() == "price_desc")
-            {
+
+            else if (sortBy.ToLower() == "price_desc")
                 query = query.OrderByDescending(p => p.Price);
-            }
 
             var pagedProducts = await query
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
+
+            foreach (var product in pagedProducts)
+            {
+                product.ImageBase64 = "data:image/jpeg;base64," + product.ImageBase64;
+            }
 
             int totalProducts = await _context.Products.CountAsync();
 
@@ -90,19 +74,37 @@ namespace Alpha.api.Controllers
         }
 
 
+
+        /// <summary>
+        /// Salvar um produto
+        /// </summary>
+        /// <remarks>
+        /// Exemplo:
+        ///
+        ///     POST /products
+        ///     {
+        ///         name: 'Logo',
+        ///         price: 0,
+        ///         barCode: '',
+        ///         imageBase64: ''
+        ///     }
+        /// </remarks>
         [HttpPost]
         [Route("/products")]
-        public async Task<ActionResult> CreateProduct(Product product)
+        public async Task<ActionResult> CreateProduct(PostProductVM request)
         {
+            var product = _mapper.Map<Product>(request);
+
             var lastProduct = await _context.Products.OrderByDescending(p => p.Id).FirstOrDefaultAsync();
 
             product.Id = (lastProduct != null) ? lastProduct.Id + 1 : 1;
+
+            product.ImageBase64 = product.ImageBase64.Contains(",") ? product.ImageBase64.Split(',').ToList<string>()[1] : product.ImageBase64;
 
             await _context.Products.AddAsync(product);
 
             try
             {
-
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateException ex)
@@ -110,25 +112,42 @@ namespace Alpha.api.Controllers
                 return BadRequest("Não foi possível inserir o produto: " + ex.Message);
             }
 
-                // TODO - Verificar o porque está dando 404
-                //  var productToFakeStore = new
-                //   {
-                //     price = product.Price.ToString(),
-                //     title = product.Name,
-                //     description = "",
-                //     image = product.Image,
-                //     category = "api"
-                //    };
+            var productToFakeStore = new
+            {
+                title = product.Name,
+                price = product.Price.ToString(),
+                description = "",
+                image = product.Image,
+                category = "api"
+            };
 
-                // await _client.PostAsJsonAsync("https://fakestoreapi.com/products", productToFakeStore);
+            var ret = await _client.PostAsJsonAsync("https://fakestoreapi.com/products", productToFakeStore);
 
             return Ok(product);
         }
 
+        /// <summary>
+        /// Editar um produto
+        /// </summary>
+        /// <remarks>
+        /// Exemplo:
+        ///
+        ///     PUT /products
+        ///     {
+        ///         'id': '1'
+        ///         name: '',
+        ///         price: 0,
+        ///         barCode: '',
+        ///         imageBase64: ''
+        ///     }
+        ///
+        /// </remarks>
         [HttpPut]
         [Route("/products")]
-        public async Task<ActionResult> UpdateProduct(Product product)
+        public async Task<ActionResult> UpdateProduct(PutProductVM request)
         {
+            var product = _mapper.Map<Product>(request);
+
             var dbProduct = await _context.Products.FindAsync(product.Id);
 
             if (dbProduct == null)
@@ -136,16 +155,40 @@ namespace Alpha.api.Controllers
                 return NotFound("Produto não encontrado");
             }
 
+            var imageBase64 = product.ImageBase64.Contains(",") ? product.ImageBase64.Split(',').ToList<string>()[1] : product.ImageBase64;
+
             dbProduct.Name = product.Name;
             dbProduct.Price = product.Price;
-            dbProduct.Image = product.Image;
+            dbProduct.ImageBase64 = imageBase64;
             dbProduct.BarCode = product.BarCode;
 
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.Update(dbProduct);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
 
-            return Ok(product);
+                throw;
+            }
+            
+
+            return Ok(dbProduct);
         }
 
+
+        /// <summary>
+        /// Deletar um produto
+        /// </summary>
+        /// <param name="id">Id do produto</param>
+        /// <remarks>
+        /// Exemplo de uso:
+        /// <code>
+        /// DELETE /products?id=3
+        /// </code>
+        /// </remarks>
+        /// <response code="200" />
         [HttpDelete]
         [Route("/products")]
         public async Task<ActionResult> DeleteProduct(int id)
@@ -164,8 +207,48 @@ namespace Alpha.api.Controllers
             return NoContent();
         }
 
+        private async Task sincronizar()
+        {
+            var response = await _client.GetAsync("https://fakestoreapi.com/products");
+
+            response.EnsureSuccessStatusCode();
+
+            var result = await response.Content.ReadAsStringAsync();
+
+            if (string.IsNullOrEmpty(result))
+                return;
+
+            var products = JsonConvert.DeserializeObject<List<Product>>(result);
+
+            var productsDbGeral = await _context.Products.ToListAsync();
+            var listUpdate = productsDbGeral
+                .Where(
+                x => products.Any(
+                    y => y.Id == x.Id)
+            );
+            if (listUpdate != null && listUpdate.Any())
+                _context.Products.UpdateRange(listUpdate);
+
+            var listCreate = products
+                .Where(x =>
+                    !productsDbGeral.Any(y =>
+                        y.Id == x.Id
+                ));
+
+            if (listCreate != null && listCreate.Any())
+            {
+                await _context.Products.AddRangeAsync(listCreate);
+
+                foreach (var product in listCreate)
+                {
+                    product.BarCode = "";
+                    using var httClient = new HttpClient();
+                    var imageBytes = await httClient.GetByteArrayAsync(product.Image);
+                    product.ImageBase64 = Convert.ToBase64String(imageBytes);
+                }
+            }
+
+            await _context.SaveChangesAsync();
+        }
     }
-
-
-
 }

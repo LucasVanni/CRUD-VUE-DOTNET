@@ -27,14 +27,20 @@ namespace Alpha.api.Models
         [JsonProperty("price")]
         public decimal Price { get; set; }
 
+        [JsonProperty("barCode")]
         [Column("BarCode")]
         [Display(Name = "BarCode")]
         [MaxLength(100)]
-        public string BarCode { get; set; }
+        public string? BarCode { get; set; }
 
         [JsonProperty("image")]
         [Column("ImageUrl")]
         [Display(Name = "ImageUrl")]
-        public string Image { get; set; }
+        public string? Image { get; set; }
+
+        [JsonProperty("imageBase64")]
+        [Column("ImageBase64")]
+        [Display(Name = "ImageBase64")]
+        public string? ImageBase64 { get; set; }
     }
 }

@@ -34,8 +34,8 @@
     "Order": 0,
     "Parameters": [
       {
-        "Name": "product",
-        "Type": "Alpha.api.Models.Product",
+        "Name": "request",
+        "Type": "Alpha.api.Models.PostProductVM",
         "IsRequired": true
       }
     ],
@@ -50,8 +50,8 @@
     "Order": 0,
     "Parameters": [
       {
-        "Name": "product",
-        "Type": "Alpha.api.Models.Product",
+        "Name": "request",
+        "Type": "Alpha.api.Models.PutProductVM",
         "IsRequired": true
       }
     ],

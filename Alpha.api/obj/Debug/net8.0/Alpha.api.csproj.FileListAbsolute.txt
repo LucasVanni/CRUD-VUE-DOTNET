@@ -5,6 +5,9 @@ C:\Users\vanni\source\repos\Alpha.api\bin\Debug\net8.0\Alpha.api.deps.json
 C:\Users\vanni\source\repos\Alpha.api\bin\Debug\net8.0\Alpha.api.runtimeconfig.json
 C:\Users\vanni\source\repos\Alpha.api\bin\Debug\net8.0\Alpha.api.dll
 C:\Users\vanni\source\repos\Alpha.api\bin\Debug\net8.0\Alpha.api.pdb
+C:\Users\vanni\source\repos\Alpha.api\bin\Debug\net8.0\Alpha.api.xml
+C:\Users\vanni\source\repos\Alpha.api\bin\Debug\net8.0\AutoMapper.dll
+C:\Users\vanni\source\repos\Alpha.api\bin\Debug\net8.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll
 C:\Users\vanni\source\repos\Alpha.api\bin\Debug\net8.0\Azure.Core.dll
 C:\Users\vanni\source\repos\Alpha.api\bin\Debug\net8.0\Azure.Identity.dll
 C:\Users\vanni\source\repos\Alpha.api\bin\Debug\net8.0\Humanizer.dll
@@ -32,6 +35,7 @@ C:\Users\vanni\source\repos\Alpha.api\bin\Debug\net8.0\Microsoft.OpenApi.dll
 C:\Users\vanni\source\repos\Alpha.api\bin\Debug\net8.0\Microsoft.SqlServer.Server.dll
 C:\Users\vanni\source\repos\Alpha.api\bin\Debug\net8.0\Microsoft.Win32.SystemEvents.dll
 C:\Users\vanni\source\repos\Alpha.api\bin\Debug\net8.0\Mono.TextTemplating.dll
+C:\Users\vanni\source\repos\Alpha.api\bin\Debug\net8.0\Newtonsoft.Json.dll
 C:\Users\vanni\source\repos\Alpha.api\bin\Debug\net8.0\Swashbuckle.AspNetCore.Swagger.dll
 C:\Users\vanni\source\repos\Alpha.api\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerGen.dll
 C:\Users\vanni\source\repos\Alpha.api\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerUI.dll
@@ -120,6 +124,7 @@ C:\Users\vanni\source\repos\Alpha.api\obj\Debug\net8.0\Alpha.api.AssemblyInfo.cs
 C:\Users\vanni\source\repos\Alpha.api\obj\Debug\net8.0\Alpha.api.csproj.CoreCompileInputs.cache
 C:\Users\vanni\source\repos\Alpha.api\obj\Debug\net8.0\Alpha.api.MvcApplicationPartsAssemblyInfo.cs
 C:\Users\vanni\source\repos\Alpha.api\obj\Debug\net8.0\Alpha.api.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\vanni\source\repos\Alpha.api\obj\Debug\net8.0\Alpha.api.sourcelink.json
 C:\Users\vanni\source\repos\Alpha.api\obj\Debug\net8.0\staticwebassets.build.json
 C:\Users\vanni\source\repos\Alpha.api\obj\Debug\net8.0\staticwebassets.development.json
 C:\Users\vanni\source\repos\Alpha.api\obj\Debug\net8.0\staticwebassets\msbuild.Alpha.api.Microsoft.AspNetCore.StaticWebAssets.props
@@ -131,8 +136,7 @@ C:\Users\vanni\source\repos\Alpha.api\obj\Debug\net8.0\scopedcss\bundle\Alpha.ap
 C:\Users\vanni\source\repos\Alpha.api\obj\Debug\net8.0\Alpha.api.csproj.Up2Date
 C:\Users\vanni\source\repos\Alpha.api\obj\Debug\net8.0\Alpha.api.dll
 C:\Users\vanni\source\repos\Alpha.api\obj\Debug\net8.0\refint\Alpha.api.dll
+C:\Users\vanni\source\repos\Alpha.api\obj\Debug\net8.0\Alpha.api.xml
 C:\Users\vanni\source\repos\Alpha.api\obj\Debug\net8.0\Alpha.api.pdb
 C:\Users\vanni\source\repos\Alpha.api\obj\Debug\net8.0\Alpha.api.genruntimeconfig.cache
 C:\Users\vanni\source\repos\Alpha.api\obj\Debug\net8.0\ref\Alpha.api.dll
-C:\Users\vanni\source\repos\Alpha.api\bin\Debug\net8.0\Newtonsoft.Json.dll
-C:\Users\vanni\source\repos\Alpha.api\obj\Debug\net8.0\Alpha.api.sourcelink.json

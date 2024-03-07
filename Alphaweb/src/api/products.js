@@ -19,7 +19,7 @@ const deleteProduct = async (id) => {
 const saveProduct = async (product) => {
     const response = await api.post("products", product)
     if (response.status === 200) {
-        return response.data
+        return response.data;
     } else {
         return []
     }

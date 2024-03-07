@@ -1,27 +1,34 @@
 
 
 <template>
+
   <div class="container">
-    <Modal :show-modal="showModal" :product="actualProduct" @close="showModal = false" @save="saveNewProduct" @edit="editProduct" />
+    <Modal :show-modal="showModal" :editing="editing" :product="actualProduct" @close="showModal = false" @save="saveNewProduct" @edit="editProduct" />
     <div class="filters">
       <input v-model="nameFilter" type="text" placeholder="Nome do Produto" class="input" />
       <input v-model="barCodeFilter" type="text" placeholder="Código de Barras" class="input" />
-      <button @click="() => showModal = true">Adicionar Produto</button>
+      <button @click="showAddProductModal">Adicionar Produto</button>
     </div>
 
-    <div class="filters">
+    <div class="filters-pagination">
       <div class="pagination-controls">
         <button @click="setPage(pagination.page - 1)" :disabled="pagination.page === 1">Anterior</button>
         <button @click="setPage(pagination.page + 1)" :disabled="pagination.page === Math.ceil(totalProducts / pagination.pageSize)">Próximo</button>
       </div>
       <div class="sort-controls">
-        <button @click="sortByPrice">Ordenar por Preço</button>
-        <button @click="() => fetchProducts(true)">Restaurar</button>
+        {{pagination.sortBy}}
+        <button @click="restoreOrSortInfos">Ordenar por Preço {{ pagination.sortBy === '' ? '' :  pagination.sortBy === 'price' ? 'Crescente' : 'Decrescente' }}</button>
+        <button @click="restoreOrSortInfos({restore: true})">Restaurar</button>
       </div>
     </div>
 
     <div>
-      Mostrando itens {{ (pagination.page - 1) * pagination.pageSize + 1 }} a {{ Math.min(pagination.page * pagination.pageSize, totalProducts) }} de {{ totalProducts }}.
+      Mostrando itens
+      {{ Math.min((pagination.page - 1) * pagination.pageSize + 1, totalProducts) }}
+      a
+      {{ Math.min(pagination.page * pagination.pageSize, totalProducts) }}
+      de
+      {{ totalProducts }}.
     </div>
 
     <div class="table-container">
@@ -36,11 +43,14 @@
           </tr>
           </thead>
           <tbody>
-          <tr v-for="product in filteredProducts" :key="product.barCode">
+          <tr v-if="loading" >
+            <p>Carregando...</p>
+         </tr>
+          <tr v-else v-for="product in filteredProducts" :key="product.barCode">
             <td>{{ product.name }}</td>
             <td>{{ product.price }}</td>
-            <td>{{ product.barCode }}</td>
-            <td><img :src="product.image" :alt="product.name" style="max-width: 100px;" class="product-image" /></td>
+            <td>{{  product.barCode ? product.barCode : 'Não informado' }}</td>
+            <td><img :src="product.imageBase64" :alt="product.name" style="max-width: 100px;" class="product-image" /></td>
             <td>
               <button @click="deleteProductById(product.id)" class="delete-button">Excluir</button>
               <button @click="openModalEditProduct(product)">Editar</button>
@@ -48,8 +58,8 @@
           </tr>
           </tbody>
         </table>
+      </div>
     </div>
-  </div>
 </template>
 
 
@@ -65,6 +75,8 @@ const nameFilter = ref('');
 const barCodeFilter = ref('');
 const showModal = ref(false);
 const actualProduct = ref({});
+const editing = ref(false);
+const loading = ref(false);
 
 const filteredProducts = computed(() =>
     products.value.filter((product) => (nameFilter.value ? product.name.toLowerCase().includes(nameFilter.value.toLowerCase()) : true) &&
@@ -79,13 +91,16 @@ const pagination = reactive({
 
 async function fetchProducts(clearAllPagination = false) {
   try {
-    const response = await getProducts( clearAllPagination ? pagination :{
+    loading.value = true;
+
+    const response = await getProducts({
       page: pagination.page,
       pageSize: pagination.pageSize,
-      sortBy: ''
+      sortBy: clearAllPagination ? '' : pagination.sortBy,
     });
     products.value = response.pagedProducts;
     totalProducts.value = response.totalProducts;
+    loading.value = false;
   } catch (error) {
     console.error('Erro ao carregar os produtos:', error);
   }
@@ -97,8 +112,16 @@ const setPage = async (newPage)  => {
   await fetchProducts();
 }
 
-const sortByPrice = async () => {
+const restoreOrSortInfos = async ({restore = false}) => {
+  if (restore) {
+    pagination.sortBy = '';
+    pagination.page = 1;
+    await fetchProducts();
+    return;
+  }
+
   pagination.sortBy = pagination.sortBy === 'price' ? 'price_desc' : 'price';
+  pagination.page = 1;
   await fetchProducts();
 }
 
@@ -118,6 +141,7 @@ const deleteProductById = async (id) => {
 const saveNewProduct = async (data) => {
   try {
     showModal.value = false;
+    actualProduct.value = {};
     await saveProduct(data);
     await fetchProducts();
   } catch (error) {
@@ -125,10 +149,17 @@ const saveNewProduct = async (data) => {
   }
 }
 
+const showAddProductModal = () => {
+  editing.value = false;
+  actualProduct.value = {};
+  showModal.value = true;
+}
+
 const openModalEditProduct = (data) => {
   try {
-    showModal.value = true;
+    editing.value = true;
     actualProduct.value = data;
+    showModal.value = true;
   } catch (error) {
     console.error('Erro ao editar o produto:', error);
   }
@@ -139,23 +170,64 @@ const editProduct = async (data) => {
     showModal.value = false;
     await updateProduct(data);
     await fetchProducts();
+    actualProduct.value = {};
   } catch (error) {
     console.error('Erro ao editar o produto:', error);
   }
 }
-
-
 </script>
 
 <style scoped>
 .container {
-  max-width: 1200px;
   margin: auto;
   padding: 20px;
+  display: flex;
+  flex-direction: column;
+  flex: 2;
+}
+
+button {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 15px;
+  margin: 2px 5px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #0056b3;
 }
 
 .filters {
   margin-bottom: 20px;
+
+  button {
+    background-color: #28a745;
+    color: white;
+    padding: 10px 15px;
+    margin: 2px 5px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  button:hover {
+    background-color: #218838;
+  }
+}
+
+.filters-pagination {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+
+  Button {
+    margin-right: 10px;
+  }
 }
 
 .input {
@@ -180,11 +252,12 @@ const editProduct = async (data) => {
   text-align: left;
   padding: 8px;
   border-bottom: 1px solid #ddd;
+  width: 250px;
 }
 
 .table th {
-  background-color: #4a4a4a; /* Cor de fundo escura */
-  color: white; /* Cor do texto claro */
+  background-color: #4a4a4a;
+  color: white;
   text-align: left;
   padding: 8px;
   border-bottom: 1px solid #ddd;
@@ -193,20 +266,5 @@ const editProduct = async (data) => {
 .product-image {
   width: 100px;
   height: auto;
-}
-
-button {
-  background-color: #007bff;
-  color: white;
-  padding: 10px 15px;
-  margin: 2px 5px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-button:hover {
-  background-color: #0056b3;
 }
 </style>

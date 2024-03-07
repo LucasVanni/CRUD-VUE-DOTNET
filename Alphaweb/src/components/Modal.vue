@@ -2,7 +2,10 @@
 <template>
   <div class="modal-overlay" v-if="showModal">
     <div class="modal-content">
-      <button class="modal-close" @click="close">&times;</button>
+      <div class="modal-header">
+        <h2>{{ editing ? 'Editando' : 'Cadastrando' }} um novo produto</h2>
+        <button class="modal-close" @click="close">&times;</button>
+      </div>
         <div class="form-group">
           <label for="nome">Nome:</label>
           <input type="text" id="nome" v-model="actualProduct.name" required>
@@ -17,7 +20,7 @@
         </div>
         <div class="form-group">
           <label for="imagem">Imagem:</label>
-          <input type="file" id="imagem" @change="loadingImage" accept="image/*">
+          <input  type="file" id="imagem" @change="loadingImage" accept="image/*">
         </div>
         <button @click="saveProduct">Salvar</button>
     </div>
@@ -30,32 +33,52 @@ import { reactive, defineProps, defineEmits, watchEffect } from 'vue';
 
 const props = defineProps({
   product: Object,
-  showModal: Boolean
+  showModal: Boolean,
+  editing: Boolean
 });
 
-const actualProduct = reactive(props.product || {});
-
-watchEffect(() => {
-  actualProduct.value = Object.assign(actualProduct, props.product);
+let actualProduct = reactive({
+  name: '',
+  price: '',
+  barCode: '',
+  image: ''
 });
+
 
 const emit = defineEmits(['close', 'save', 'edit']);
+
+watchEffect(() => {
+  if (props.editing && props.product) {
+    actualProduct = reactive({
+      name: props.product.name,
+      price : props.product.price,
+      barCode: props.product.barCode,
+      image: props.product.imageBase64
+    });
+  }
+});
+
 
 const close = () => {
   emit('close');
 };
 
 const saveProduct = () => {
-  if(!props.product) {
-    emit('save', actualProduct.value);
+  if(!props.editing) {
+    emit('save', {
+      name: actualProduct.name,
+      price: actualProduct.price,
+      barCode: actualProduct.barCode,
+      imageBase64: actualProduct.image
+    });
   }
   else {
     emit('edit',{
       id: props.product.id,
-      name: actualProduct.value.name,
-      price: actualProduct.value.price,
-      barCode: actualProduct.value.barCode,
-      image: actualProduct.value.image
+      name: actualProduct.name,
+      price: actualProduct.price,
+      barCode: actualProduct.barCode,
+      imageBase64: actualProduct.image
     });
   }
 };
@@ -65,7 +88,7 @@ const loadingImage = (event) => {
   if (file) {
     const reader = new FileReader();
     reader.onload = (e) => {
-      actualProduct.value.image = e.target.result;
+      actualProduct.image = e.target.result;
     };
     reader.readAsDataURL(file);
   }
@@ -91,22 +114,35 @@ const loadingImage = (event) => {
 
 .modal-content {
   background-color: white;
+  display: flex;
+  flex-direction: column;
   padding: 50px;
   border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   max-width: 500px;
   z-index: 1001;
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  h2 {
+    color: #4a4a4a;
+    font-size: 24px;
+    padding: 0 15px;
+  }
+
+  .modal-close {
+    font-size: 20px;
+    cursor: pointer;
+  }
 }
 
-.modal-close {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: none;
-  border: none;
-  font-size: 20px;
-  cursor: pointer;
-}
+
+
 
 input[type="text"],
 input[type="file"],
@@ -122,6 +158,7 @@ input[type="number"] {
 input[type="text"]:focus,
 input[type="file"]:focus {
   border-color: #90caf9;
+  color: #90caf9;
   outline: none;
 }
 

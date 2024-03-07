@@ -1,0 +1,161 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Alpha.api</name>
+    </assembly>
+    <members>
+        <member name="M:Alpha.api.Controllers.ProductsController.#ctor(Alpha.api.Data.ProductsContext,AutoMapper.IMapper)">
+            <summary>
+            
+            </summary>
+            <param name="context"></param>        
+        </member>
+        <member name="M:Alpha.api.Controllers.ProductsController.GetProducts(System.Int32,System.Int32,System.String)">
+            <summary>
+            Consulta de Produtos
+            </summary>
+            <param name="page"></param>
+            <param name="pageSize">Quantidade de produtos por página. O padrão é 10.</param>
+            <param name="sortBy">Campo pelo qual os produtos serão ordenados. Deixe vazio para ordenação padrão.</param>
+            <returns>Uma lista paginada de produtos.</returns>
+            <remarks>
+            Exemplo de uso:
+            <code>
+            GET /products?page=2&amp;pageSize=20&amp;sortBy=nome
+            </code>
+            </remarks>
+            <response code="200">Uma listagem com os produtos</response>
+        </member>
+        <member name="M:Alpha.api.Controllers.ProductsController.CreateProduct(Alpha.api.Models.PostProductVM)">
+             <summary>
+             Salvar um produto
+             </summary>
+             <remarks>
+             Exemplo:
+            
+                 POST /products
+                 {
+                     name: 'Logo',
+                     price: 0,
+                     barCode: '',
+                     imageBase64: ''
+                 }
+             </remarks>
+        </member>
+        <member name="M:Alpha.api.Controllers.ProductsController.UpdateProduct(Alpha.api.Models.PutProductVM)">
+             <summary>
+             Editar um produto
+             </summary>
+             <remarks>
+             Exemplo:
+            
+                 PUT /products
+                 {
+                     'id': '1'
+                     name: '',
+                     price: 0,
+                     barCode: '',
+                     imageBase64: ''
+                 }
+            
+             </remarks>
+        </member>
+        <member name="M:Alpha.api.Controllers.ProductsController.DeleteProduct(System.Int32)">
+            <summary>
+            Deletar um produto
+            </summary>
+            <param name="id">Id do produto</param>
+            <remarks>
+            Exemplo de uso:
+            <code>
+            DELETE /products?id=3
+            </code>
+            </remarks>
+            <response code="200" />
+        </member>
+        <member name="T:Alpha.api.Migrations.InitialMigrations">
+            <inheritdoc />
+        </member>
+        <member name="M:Alpha.api.Migrations.InitialMigrations.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Alpha.api.Migrations.InitialMigrations.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Alpha.api.Migrations.InitialMigrations.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Alpha.api.Migrations.ChangeIdType">
+            <inheritdoc />
+        </member>
+        <member name="M:Alpha.api.Migrations.ChangeIdType.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Alpha.api.Migrations.ChangeIdType.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Alpha.api.Migrations.ChangeIdType.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Alpha.api.Migrations.Updateproperties">
+            <inheritdoc />
+        </member>
+        <member name="M:Alpha.api.Migrations.Updateproperties.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Alpha.api.Migrations.Updateproperties.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Alpha.api.Migrations.Updateproperties.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Alpha.api.Migrations.removelengthimage">
+            <inheritdoc />
+        </member>
+        <member name="M:Alpha.api.Migrations.removelengthimage.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Alpha.api.Migrations.removelengthimage.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Alpha.api.Migrations.removelengthimage.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Alpha.api.Migrations.add_ImageBase64">
+            <inheritdoc />
+        </member>
+        <member name="M:Alpha.api.Migrations.add_ImageBase64.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Alpha.api.Migrations.add_ImageBase64.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Alpha.api.Migrations.add_ImageBase64.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Alpha.api.Migrations.add_extensao">
+            <inheritdoc />
+        </member>
+        <member name="M:Alpha.api.Migrations.add_extensao.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Alpha.api.Migrations.add_extensao.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Alpha.api.Migrations.add_extensao.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Alpha.api.Migrations.exclude_extension">
+            <inheritdoc />
+        </member>
+        <member name="M:Alpha.api.Migrations.exclude_extension.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Alpha.api.Migrations.exclude_extension.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Alpha.api.Migrations.exclude_extension.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+    </members>
+</doc>
